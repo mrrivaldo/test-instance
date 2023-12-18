@@ -1,0 +1,72 @@
+* {
+  box-sizing: border-box;
+  font-family: "PT Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  height: 8vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.navbar-logo {
+  justify-self: start;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-menu {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-gap: 25px;
+  width: 70vw;
+  text-align: center;
+  list-style: none;
+  justify-content: end;
+}
+
+.nav-link {
+  font-size: 20px;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+}
+
+.nav-link:hover {
+  border-bottom: 4px solid #fff;
+  transition: all 0.2s ease-out;
+}
+
+.home-container {
+  background: url("./images/background.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  object-fit: contain;
+}
+
+/* Thanks */
+.thanks-container {
+  margin-top: 10vh;
+}
+
+.thx {
+  margin-top: 40vh;
+  font-size: 40px;
+  text-align: center;
+}
+
+.thx p {
+  margin-top: 20px;
+}

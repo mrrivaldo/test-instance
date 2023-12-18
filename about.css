@@ -1,0 +1,91 @@
+* {
+  box-sizing: border-box;
+  font-family: "PT Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  height: 8vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.navbar-logo {
+  justify-self: start;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-menu {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-gap: 25px;
+  width: 70vw;
+  text-align: center;
+  list-style: none;
+  justify-content: end;
+}
+
+.nav-link {
+  font-size: 20px;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+}
+
+.nav-link:hover {
+  border-bottom: 4px solid #fff;
+  transition: all 0.2s ease-out;
+}
+
+.home-container {
+  background: url("./images/background.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  object-fit: contain;
+}
+
+/* About Content */
+.about-container {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+.about-content {
+  margin-top: 10vh;
+}
+.about-title {
+  font-size: 40px;
+}
+
+.about-subtitle {
+  display: flex;
+  justify-content: start;
+  margin-left: 5vw;
+  margin-top: 40px;
+  font-size: 25px;
+}
+
+.about-text {
+  text-align: justify;
+  font-size: 20px;
+  margin-left: 5vw;
+}
+
+.stores-menu {
+  font-size: 20px;
+  margin-top: 10px;
+  margin-left: 7vw;
+  text-align: start;
+}

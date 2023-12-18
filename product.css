@@ -1,0 +1,183 @@
+/* Reset styles */
+* {
+  box-sizing: border-box;
+  font-family: "PT Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  height: 8vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.navbar-logo {
+  justify-self: start;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-menu {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-gap: 25px;
+  width: 70vw;
+  text-align: center;
+  list-style: none;
+  justify-content: end;
+}
+
+.nav-link {
+  font-size: 20px;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+}
+
+.nav-link:hover {
+  border-bottom: 4px solid #fff;
+  transition: all 0.2s ease-out;
+}
+
+/* Product styles */
+.product {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10vh;
+}
+
+.nike-product {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.nike-product h2 {
+  font-size: 40px;
+  margin-top: 20px;
+}
+
+.nike-title {
+  display: flex;
+  margin-top: 10vh;
+  margin-left: 18vw;
+  justify-content: start;
+  text-align: start;
+  align-items: center;
+}
+
+.nike-title p {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+/* Carousel styles */
+.carousel {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-gap: 35px;
+  justify-content: center;
+}
+
+.carousel-card {
+  width: 400px;
+  background: #fff;
+  border-radius: 20px;
+  margin: 20px 0;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  width: 400px;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.card-image img {
+  width: 400px;
+  border-radius: 20px;
+}
+
+/* CRUD button styles */
+.crud-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.crud-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.crud-button:hover {
+  background-color: #0056b3;
+}
+
+.center-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 767px) {
+  .header {
+    height: auto;
+    position: static;
+  }
+
+  .nav-menu {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .nav-link {
+    font-size: 16px;
+  }
+
+  .nike-title {
+    margin: 10px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .nike-title p {
+    font-size: 24px;
+  }
+
+  .carousel {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 20px;
+  }
+
+  .carousel-card {
+    width: 100%;
+  }
+
+  .card-content {
+    width: 100%;
+  }
+
+  .card-image img {
+    width: 100%;
+    max-width: none;
+  }
+}
