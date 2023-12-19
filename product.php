@@ -92,22 +92,24 @@
     <div class="modal-content">
         <span class="close" onclick="closeUpdateModal()">&times;</span>
         <!-- Your update form goes here -->
-        <form method="post" action="update_product.php" enctype="multipart/form-data" id="updateProductForm">
-            <!-- Hidden input for product ID -->
-            <input type="hidden" name="id" id="updateProductId" />
-
+        <form method="post" action="update_product.php" enctype="multipart/form-data" id="productForm">
             <!-- Other form fields -->
-            <label for="updateName">Name:</label>
-            <input type="text" name="name" id="updateName" required />
+            <input type="hidden" name="id" value="<?php echo $row['product_id']; ?>" />
+            
+            <label for="name">Name:</label>
+            <input type="text" name="name" value="<?php echo $row['name']; ?>" required />
 
-            <label for="updateDescription">Description:</label>
-            <textarea name="description" id="updateDescription" required></textarea>
+            <label for="description">Description:</label>
+            <textarea name="description" required><?php echo $row['description']; ?></textarea>
 
-            <label for="updatePrice">Price:</label>
-            <input type="text" name="price" id="updatePrice" required />
+            <label for="price">Price:</label>
+            <input type="text" name="price" value="<?php echo $row['price']; ?>" required />
 
-            <label for="updateImage">Image:</label>
-            <input type="file" name="image" id="updateImage" required />
+            <label for="image">Image:</label>
+            <input type="file" name="image" />
+
+            <!-- Hidden input to store the existing image URL -->
+            <input type="hidden" name="existing_image" value="<?php echo $row['image_url']; ?>" />
 
             <!-- Submit button -->
             <input type="submit" value="Update Product" />
