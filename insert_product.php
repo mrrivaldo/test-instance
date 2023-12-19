@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require '/path/to/vendor/autoload.php';
+require './vendor/autoload.php';
 include "db.inc.php"; 
 
 // Retrieve form data
