@@ -144,20 +144,22 @@
 
    
    <!-- JavaScript -->
-<script>
+   <script>
     function openUpdateModal(productId, name, description, price) {
-            document.getElementById("updateProductId").value = productId;
-            document.getElementById("updateName").value = name;
-            document.getElementById("updateDescription").value = description;
-            document.getElementById("updatePrice").value = price;
+        // Set values for the input fields in the update form
+        document.getElementById("updateProductId").value = productId;
+        document.getElementById("updateName").value = name;
+        document.getElementById("updateDescription").value = description;
+        document.getElementById("updatePrice").value = price;
 
-            document.getElementById("updateModal").style.display = "block";
-        }
+        // Display the update modal
+        document.getElementById("updateModal").style.display = "block";
+    }
 
-        function closeUpdateModal() {
-            document.getElementById("updateModal").style.display = "none";
-        }
-
+    function closeUpdateModal() {
+        // Close the update modal
+        document.getElementById("updateModal").style.display = "none";
+    }
 
     function confirmDelete(productId) {
         var confirmDelete = confirm("Are you sure you want to delete this product?");
@@ -167,10 +169,12 @@
     }
 
     function openModal() {
+        // Display the add product modal
         document.getElementById("myModal").style.display = "block";
     }
 
     function closeModal() {
+        // Close the add product modal
         document.getElementById("myModal").style.display = "none";
     }
 
@@ -178,14 +182,18 @@
     window.onclick = function (event) {
         if (event.target === document.getElementById("myModal")) {
             closeModal();
+        } else if (event.target === document.getElementById("updateModal")) {
+            closeUpdateModal();
         }
     }
-    
-    // Add this function to close the modal when the page loads
+
+    // Add this function to close the modals when the page loads
     window.onload = function () {
         closeModal();
+        closeUpdateModal();
     }
 </script>
+
 
 </body>
 
