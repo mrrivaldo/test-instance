@@ -85,9 +85,9 @@ Your HTML structure looks good, but let's make a few improvements for better org
                     }
                     ?>
                     <!-- Update your existing "Add" button with this -->
-                    <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
-
+                    
                 </div>
+                <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
             </div>
         </div>
     </div>
@@ -117,35 +117,37 @@ Your HTML structure looks good, but let's make a few improvements for better org
         </div>
     </div>
 
-    <!-- JavaScript for Delete confirmation -->
-    <script>
-        function confirmDelete(productId) {
-            var confirmDelete = confirm("Are you sure you want to delete this product?");
-            if (confirmDelete) {
-                window.location.href = 'delete_product.php?id=' + productId;
-            }
+   
+   <!-- JavaScript for Delete confirmation -->
+<script>
+    function confirmDelete(productId) {
+        var confirmDelete = confirm("Are you sure you want to delete this product?");
+        if (confirmDelete) {
+            window.location.href = 'delete_product.php?id=' + productId;
         }
+    }
 
-        function openModal() {
-            document.getElementById("myModal").style.display = "block";
+    function openModal() {
+        document.getElementById("myModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+    }
+
+    // Optional: Close the modal if the user clicks outside of it
+    window.onclick = function (event) {
+        if (event.target === document.getElementById("myModal")) {
+            closeModal();
         }
+    }
+    
+    // Add this function to close the modal when the page loads
+    window.onload = function () {
+        closeModal();
+    }
+</script>
 
-        function closeModal() {
-            document.getElementById("myModal").style.display = "none";
-        }
-
-        // Optional: Close the modal if the user clicks outside of it
-        window.onclick = function (event) {
-            if
-
- (event.target === document.getElementById("myModal")) {
-                closeModal();
-            }
-        }
-    </script>
 </body>
 
 </html>
-```
-
-This structure keeps your HTML clean and separates the modal code for better organization. Additionally, I've added comments to guide you through the code.
