@@ -78,17 +78,43 @@
                         echo '</div>';
                     }
                         
-                    
-                    echo '<a class="crud-button center-button" href="insert_product.php"><i class="fa-solid fa-plus"></i></a>';
-                    
-                    // Close the database connection
-                    mysqli_close($connection);
                     ?>
+                    <!-- Update your existing "Add" button with this -->
+                    <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
 
+                    
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Add this modal code within the <body> tag, before the closing </body> tag -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <!-- Your form goes here -->
+        <form method="post" action="insert_product.php" enctype="multipart/form-data" id="productForm">
+            <!-- Other form fields -->
+            <label for="name">Name:</label>
+            <input type="text" name="name" required />
+
+            <label for="description">Description:</label>
+            <textarea name="description" required></textarea>
+
+            <label for="price">Price:</label>
+            <input type="text" name="price" required />
+
+            <label for="image">Image:</label>
+            <input type="file" name="image" required />
+
+            <!-- Submit button -->
+            <input type="submit" value="Add Product" />
+        </form>
+    </div>
+</div>
+
+     <!-- Close the database connection -->
+    <?php mysqli_close($connection);?>
 
                         <!-- JavaScript for Delete confirmation -->
     <script>
@@ -98,6 +124,22 @@
                 window.location.href = 'delete_product.php?id=' + productId;
             }
         }
+
+        function openModal() {
+        document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+        }
+        
+
+         // Optional: Close the modal if the user clicks outside of it
+            window.onclick = function (event) {
+                if (event.target === document.getElementById("myModal")) {
+                    closeModal();
+                }
+            }
     </script>
 </body>
 </html>
