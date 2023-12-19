@@ -73,7 +73,7 @@
 
                         // Display buttons for CRUD operations
                         echo '<div class="crud-buttons">';
-                        echo '<a class="crud-button" href="update_product.php?id=' . $row['product_id'] . '"><i class="fa-solid fa-pen"></i></a>';
+                        echo '<a class="crud-button" href="#" onclick="openUpdateModal(\'' . $row['product_id'] . '\', \'' . $row['name'] . '\', \'' . $row['description'] . '\', \'' . $row['price'] . '\')"><i class="fa-solid fa-pen"></i></a>';
                         echo '<a class="crud-button" href="#" onclick="confirmDelete(' . $row['product_id'] . ')"><i class="fa-solid fa-xmark"></i></a>';
                         echo '</div>';
 
@@ -86,6 +86,34 @@
         </div>
         <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
     </div>
+
+    <!-- Add this modal code within the <body> tag, before the closing </body> tag -->
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUpdateModal()">&times;</span>
+        <!-- Your update form goes here -->
+        <form method="post" action="update_product.php" enctype="multipart/form-data" id="updateProductForm">
+            <!-- Hidden input for product ID -->
+            <input type="hidden" name="id" id="updateProductId" />
+
+            <!-- Other form fields -->
+            <label for="updateName">Name:</label>
+            <input type="text" name="name" id="updateName" required />
+
+            <label for="updateDescription">Description:</label>
+            <textarea name="description" id="updateDescription" required></textarea>
+
+            <label for="updatePrice">Price:</label>
+            <input type="text" name="price" id="updatePrice" required />
+
+            <label for="updateImage">Image:</label>
+            <input type="file" name="image" id="updateImage" required />
+
+            <!-- Submit button -->
+            <input type="submit" value="Update Product" />
+        </form>
+    </div>
+</div>
 
     <!-- Add this modal code within the <body> tag, before the closing </body> tag -->
     <div id="myModal" class="modal">
@@ -113,8 +141,22 @@
     </div>
 
    
-   <!-- JavaScript for Delete confirmation -->
+   <!-- JavaScript -->
 <script>
+    function openUpdateModal(productId, name, description, price) {
+            document.getElementById("updateProductId").value = productId;
+            document.getElementById("updateName").value = name;
+            document.getElementById("updateDescription").value = description;
+            document.getElementById("updatePrice").value = price;
+
+            document.getElementById("updateModal").style.display = "block";
+        }
+
+        function closeUpdateModal() {
+            document.getElementById("updateModal").style.display = "none";
+        }
+
+
     function confirmDelete(productId) {
         var confirmDelete = confirm("Are you sure you want to delete this product?");
         if (confirmDelete) {
