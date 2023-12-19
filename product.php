@@ -1,6 +1,3 @@
-Your HTML structure looks good, but let's make a few improvements for better organization and readability:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -84,12 +81,10 @@ Your HTML structure looks good, but let's make a few improvements for better org
                         echo '</div>';
                     }
                     ?>
-                    <!-- Update your existing "Add" button with this -->
-                    
                 </div>
             </div>
-            <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
         </div>
+        <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
     </div>
 
     <!-- Add this modal code within the <body> tag, before the closing </body> tag -->
