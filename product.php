@@ -79,7 +79,7 @@
                     }
                         
                     
-                    echo '<a class="crud-button center-button" href="create_product.php"><i class="fa-solid fa-plus"></i></a>';
+                    echo '<a class="crud-button center-button" href="insert_product.php"><i class="fa-solid fa-plus"></i></a>';
                     
                     // Close the database connection
                     mysqli_close($connection);
