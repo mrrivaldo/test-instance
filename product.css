@@ -160,6 +160,9 @@ body::-webkit-scrollbar {
   text-align: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .close {
