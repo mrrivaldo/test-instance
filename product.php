@@ -87,8 +87,8 @@ Your HTML structure looks good, but let's make a few improvements for better org
                     <!-- Update your existing "Add" button with this -->
                     
                 </div>
-                <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
             </div>
+            <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
         </div>
     </div>
 
