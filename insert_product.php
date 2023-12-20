@@ -15,11 +15,27 @@ $image = $_FILES['image'] ?? '';
 
 // Check if an image is uploaded
 if (!empty($image['name'])) {
-    // Read the contents of the uploaded file
-    $imageContent = file_get_contents($image['tmp_name']);
+    // Set the directory where you want to store the uploaded images
+    $uploadDirectory = './images/';
+
+    // Create a unique filename to avoid overwriting existing files
+    $imageFileName = uniqid() . '_' . $image['name'];
+
+    // Specify the path to move the uploaded file to
+    $targetPath = $uploadDirectory . $imageFileName;
+
+    // Move the uploaded file to the specified directory
+    if (move_uploaded_file($image['tmp_name'], $targetPath)) {
+        // File was successfully uploaded, now you can store $targetPath in the database
+        $image_url = $targetPath;
+    } else {
+        // Failed to move the uploaded file
+        echo "Error: Failed to move the uploaded file.";
+        exit;
+    }
 } else {
-    // No image uploaded, set imageContent to null
-    $imageContent = null;
+    // No image uploaded, set image_url to an empty string
+    $image_url = '';
 }
 
 // Connect to RDS
@@ -30,8 +46,8 @@ if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Insert product data into RDS with image content as BLOB
-$sql = "INSERT INTO products (name, description, image_content, price) VALUES (?, ?, ?, ?)";
+// Insert product data into RDS
+$sql = "INSERT INTO products (name, description, image_url, price) VALUES (?, ?, ?, ?)";
 $stmt = mysqli_prepare($connection, $sql);
 
 // Check for the prepared statement
@@ -40,7 +56,7 @@ if ($stmt === false) {
 }
 
 // Bind parameters to the prepared statement
-mysqli_stmt_bind_param($stmt, 'sssd', $name, $description, $imageContent, $price);
+mysqli_stmt_bind_param($stmt, 'sssd', $name, $description, $image_url, $price);
 
 // Execute the prepared statement
 $result = mysqli_stmt_execute($stmt);
@@ -56,4 +72,3 @@ if ($result) {
 // Close the prepared statement and the database connection
 mysqli_stmt_close($stmt);
 mysqli_close($connection);
-?>
