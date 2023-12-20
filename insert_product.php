@@ -27,8 +27,16 @@ if (!$connection) {
 $sql = "INSERT INTO products (name, description, image_url, price) VALUES (?, ?, ?, ?)";
 $stmt = mysqli_prepare($connection, $sql);
 
+// Check for the prepared statement
+if ($stmt === false) {
+    die("Error in preparing statement: " . mysqli_error($connection));
+}
+
+// Initialize the image_url variable to an empty string
+$image_url = '';
+
 // Bind parameters to the prepared statement
-mysqli_stmt_bind_param($stmt, 'sssi', $name, $description, '', $price);
+mysqli_stmt_bind_param($stmt, 'sssi', $name, $description, $image_url, $price);
 
 // Execute the prepared statement
 $result = mysqli_stmt_execute($stmt);
@@ -44,4 +52,3 @@ if ($result) {
 // Close the prepared statement and the database connection
 mysqli_stmt_close($stmt);
 mysqli_close($connection);
-?>
