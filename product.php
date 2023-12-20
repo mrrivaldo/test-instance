@@ -87,37 +87,37 @@
         <a class="crud-button center-button" href="#" onclick="openModal()"><i class="fa-solid fa-plus"></i></a>
     </div>
 
-    <!-- Add this modal code within the <body> tag, before the closing </body> tag -->
-<div id="updateModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeUpdateModal()">&times;</span>
-        <!-- Your update form goes here -->
-        <form method="post" action="update_product.php" enctype="multipart/form-data" id="productForm">
-            <!-- Other form fields -->
-            <input type="hidden" name="id" value="<?php echo $row['product_id']; ?>" />
-            
-            <label for="name">Name:</label>
-            <input type="text" name="name" value="<?php echo $row['name']; ?>" required />
+    <!-- UPDATE MODAL -->
+        <div id="updateModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeUpdateModal()">&times;</span>
+                <!-- Your update form goes here -->
+                <form method="post" action="update_product.php" enctype="multipart/form-data" id="updateProductForm">
+                    <!-- Other form fields -->
+                    <input type="hidden" name="id" id="updateProductId" value="" />
 
-            <label for="description">Description:</label>
-            <textarea name="description" required><?php echo $row['description']; ?></textarea>
+                    <label for="updateName">Name:</label>
+                    <input type="text" name="name" id="updateName" value="" required />
 
-            <label for="price">Price:</label>
-            <input type="text" name="price" value="<?php echo $row['price']; ?>" required />
+                    <label for="updateDescription">Description:</label>
+                    <textarea name="description" id="updateDescription" required></textarea>
 
-            <label for="image">Image:</label>
-            <input type="file" name="image" />
+                    <label for="updatePrice">Price:</label>
+                    <input type="text" name="price" id="updatePrice" value="" required />
 
-            <!-- Hidden input to store the existing image URL -->
-            <input type="hidden" name="existing_image" value="<?php echo $row['image_url']; ?>" />
+                    <label for="updateImage">Image:</label>
+                    <input type="file" name="image" id="updateImage" />
 
-            <!-- Submit button -->
-            <input type="submit" value="Update Product" />
-        </form>
-    </div>
-</div>
+                    <!-- Hidden input to store the existing image URL -->
+                    <input type="hidden" name="existing_image" id="updateExistingImage" value="" />
 
-    <!-- Add this modal code within the <body> tag, before the closing </body> tag -->
+                    <!-- Submit button -->
+                    <input type="submit" value="Update Product" />
+                </form>
+            </div>
+        </div>
+
+    <!-- ADD MODAL -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -145,7 +145,7 @@
    
    <!-- JavaScript -->
    <script>
-    function openUpdateModal(productId, name, description, price) {
+     function openUpdateModal(productId, name, description, price) {
         // Set values for the input fields in the update form
         document.getElementById("updateProductId").value = productId;
         document.getElementById("updateName").value = name;
