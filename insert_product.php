@@ -13,6 +13,31 @@ $description = $_POST['description'] ?? '';
 $price = $_POST['price'] ?? '';
 $image = $_FILES['image'] ?? '';
 
+// Check if an image is uploaded
+if (!empty($image['name'])) {
+    // Set the directory where you want to store the uploaded images
+    $uploadDirectory = './images/';
+
+    // Create a unique filename to avoid overwriting existing files
+    $imageFileName = uniqid() . '_' . $image['name'];
+
+    // Specify the path to move the uploaded file to
+    $targetPath = $uploadDirectory . $imageFileName;
+
+    // Move the uploaded file to the specified directory
+    if (move_uploaded_file($image['tmp_name'], $targetPath)) {
+        // File was successfully uploaded, now you can store $targetPath in the database
+        $image_url = $targetPath;
+    } else {
+        // Failed to move the uploaded file
+        echo "Error: Failed to move the uploaded file.";
+        exit;
+    }
+} else {
+    // No image uploaded, set image_url to an empty string
+    $image_url = '';
+}
+
 // Connect to RDS
 $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
@@ -20,8 +45,6 @@ $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
 }
-
-// No need for S3-related code, remove the block
 
 // Insert product data into RDS
 $sql = "INSERT INTO products (name, description, image_url, price) VALUES (?, ?, ?, ?)";
@@ -32,11 +55,8 @@ if ($stmt === false) {
     die("Error in preparing statement: " . mysqli_error($connection));
 }
 
-// Initialize the image_url variable to an empty string
-$image_url = '';
-
 // Bind parameters to the prepared statement
-mysqli_stmt_bind_param($stmt, 'sssi', $name, $description, $image_url, $price);
+mysqli_stmt_bind_param($stmt, 'sssd', $name, $description, $image_url, $price);
 
 // Execute the prepared statement
 $result = mysqli_stmt_execute($stmt);
