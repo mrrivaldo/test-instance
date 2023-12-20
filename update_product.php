@@ -19,7 +19,7 @@ $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 // Check if a new image is uploaded
 if (!empty($image['name'])) {
     // Process image upload logic (You can include your S3 upload code here)
-    $targetDir = "uploads/";
+    $targetDir = "./images/";
     $targetFile = $targetDir . basename($image['name']);
     move_uploaded_file($image['tmp_name'], $targetFile);
 
