@@ -16,10 +16,18 @@ $existingImage = $_POST['existing_image'];
 // Connect to RDS
 $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
-// No need for S3-related code, remove the block
+// Check if a new image is uploaded
+if (!empty($image['name'])) {
+    // Process image upload logic (You can include your S3 upload code here)
+    // ...
 
-// Update product data in RDS
-$sql = "UPDATE products SET name='$name', description='$description', price=$price, image_url='$existingImage' WHERE product_id=$id";
+    // Update product data in RDS with the new image URL
+    $sql = "UPDATE products SET name='$name', description='$description', price=$price, image_url='$newImageUrl' WHERE product_id=$id";
+} else {
+    // Update product data in RDS without updating the image
+    $sql = "UPDATE products SET name='$name', description='$description', price=$price, image_url='$existingImage' WHERE product_id=$id";
+}
+
 $result = mysqli_query($connection, $sql);
 
 // Check for success
