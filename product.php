@@ -39,28 +39,11 @@
                     <p>Shop</p>
                 </div>
                 <div class="carousel">
-                    
+                    <?php include "db.inc.php"; ?>
+
                     <?php
                     error_reporting(E_ALL);
                     ini_set('display_errors', 1);
-                    
-                    include "db.inc.php";
-                    include "keyaws.php";
-                    require './vendor/autoload.php';
-                  
-
-                    // Set up AWS credentials
-                    $s3 = new Aws\S3\S3Client([
-                        'version' => 'latest',
-                        'region' => 'us-east-1', // Replace with your AWS region
-                        'credentials' => [
-                            'key' => AWS_ACCESS_KEY_ID,
-                            'secret' => AWS_SECRET_ACCESS_KEY,
-                        ],
-                    ]);
-
-
-                    
                     // Create a connection to the database
                     $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
 
@@ -78,11 +61,7 @@
                         echo '<div class="carousel-card">';
                         echo '<div class="card-content">';
                         echo '<div class="card-image">';
-
-                        // Get the object URL from S3
-                        $s3ObjectUrl = $s3->getObjectUrl('wipe-web-s3', 'images/' . $row['image_url']);
-
-                        echo '<img src="' . $s3ObjectUrl . '" alt="product-image" />';
+                        echo '<img src="' . $row['image_url'] . '" alt="product-image" />';
                         echo '</div>';
                         echo '<div class="card-name">';
                         echo '<h3>' . $row['name'] . '</h3>';
