@@ -62,39 +62,11 @@ if (!empty($image['name'])) {
         mysqli_stmt_close($stmt);
         mysqli_close($connection);
 
+        // Optionally, you can delete the local image file after processing
+        unlink($targetPath);
 
-        // Log AWS credentials for debugging
-        error_log('AWS Access Key ID: ' . getenv('AWS_ACCESS_KEY_ID'));
-        error_log('AWS Secret Access Key: ' . getenv('AWS_SECRET_ACCESS_KEY'));
-        // Upload the image to S3
-        $s3 = new Aws\S3\S3Client([
-            'version' => 'latest',
-            'region' => 'us-east-1', // Replace with your AWS region
-            'credentials' => [
-                'key' => getenv('AWS_ACCESS_KEY_ID'),
-                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
-            ],
-           
-        ]);
-
-        $bucket = 'wipe-web-s3'; // Replace with your S3 bucket name
-
-        try {
-            $result = $s3->putObject([
-                'Bucket' => $bucket,
-                'Key' => $imageFileName,
-                'SourceFile' => $targetPath,
-            ]);
-
-            // Optionally, you can delete the local image file after uploading to S3
-            unlink($targetPath);
-
-            // Redirect to the product page on success
-            header("Location: product.php");
-        } catch (Exception $e) {
-            // Handle S3 upload error
-            echo "Error uploading to S3: " . $e->getMessage();
-        }
+        // Redirect to the product page on success
+        header("Location: product.php");
     } else {
         // Failed to move the uploaded file
         echo "Error: Failed to move the uploaded file.";
