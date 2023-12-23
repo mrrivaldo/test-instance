@@ -28,7 +28,7 @@ if (!empty($image['name'])) {
     // Move the uploaded file to the specified directory
     if (move_uploaded_file($image['tmp_name'], $targetPath)) {
         // File was successfully uploaded
-        $image_url = $targetPath;
+        $image_url = '';  // Initialize image URL
 
         // Connect to RDS
         $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
@@ -38,7 +38,29 @@ if (!empty($image['name'])) {
             die("Connection failed: " . mysqli_connect_error());
         }
 
-        // Insert product data into RDS
+        // Create S3 client using AWS credentials from keyaws.php
+        $s3 = new Aws\S3\S3Client([
+            'version' => 'latest',
+            'region' => 'us-east-1', // Replace with your AWS region
+            'credentials' => [
+                'key' => AWS_ACCESS_KEY_ID,
+                'secret' => AWS_SECRET_ACCESS_KEY,
+            ],
+        ]);
+
+        // Upload image to S3
+        $s3ImageKey = 'images/' . $imageFileName;
+        $s3->putObject([
+            'Bucket' => 'wipe-web-s3',
+            'Key' => $s3ImageKey,
+            'SourceFile' => $targetPath,
+            'ContentType' => mime_content_type($targetPath),
+        ]);
+
+        // Get the S3 URL of the uploaded image
+        $image_url = $s3->getObjectUrl('wipe-web-s3', $s3ImageKey);
+
+        // Insert product data into RDS with S3 URL
         $sql = "INSERT INTO products (name, description, image_url, price) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($connection, $sql);
 
@@ -62,31 +84,6 @@ if (!empty($image['name'])) {
         // Close the prepared statement and the database connection
         mysqli_stmt_close($stmt);
         mysqli_close($connection);
-
-        // Create S3 client using AWS credentials from keyaws.php
-        $s3 = new Aws\S3\S3Client([
-            'version' => 'latest',
-            'region' => 'us-east-1', // Replace with your AWS region
-            'credentials' => [
-                'key' => AWS_ACCESS_KEY_ID,
-                'secret' => AWS_SECRET_ACCESS_KEY,
-            ],
-        ]);
-
-        // Upload product data to S3
-        $productDataKey = 'product_data/' . $imageFileName . '.json';
-        $productData = json_encode([
-            'name' => $name,
-            'description' => $description,
-            'price' => $price,
-        ]);
-
-        $s3->putObject([
-            'Bucket' => 'wipe-web-s3',
-            'Key' => $productDataKey,
-            'Body' => $productData,
-            'ContentType' => 'application/json',
-        ]);
 
         // Optionally, you can delete the local image file after processing
         unlink($targetPath);
