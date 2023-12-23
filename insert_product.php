@@ -6,6 +6,7 @@ ini_set('display_errors', 1);
 // Include necessary files and libraries
 require './vendor/autoload.php';
 include "db.inc.php"; 
+include "keyaws.php";
 
 use Aws\S3\S3Client;
 
@@ -71,8 +72,8 @@ if (!empty($image['name'])) {
             'version' => 'latest',
             'region' => 'us-east-1', // Replace with your AWS region
             'credentials' => [
-                'key' => getenv('AWS_ACCESS_KEY_ID'),
-                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
+                'key' => AWS_ACCESS_KEY_ID,
+                'secret' => AWS_SECRET_ACCESS_KEY,
             ],
         ]);
 
