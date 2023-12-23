@@ -7,6 +7,8 @@ ini_set('display_errors', 1);
 require './vendor/autoload.php';
 include "db.inc.php"; 
 
+use Aws\S3\S3Client;
+
 // Retrieve form data
 $name = $_POST['name'] ?? '';
 $description = $_POST['description'] ?? '';
@@ -63,10 +65,36 @@ if (!empty($image['name'])) {
         mysqli_close($connection);
 
         // Optionally, you can delete the local image file after processing
-        unlink($targetPath);
 
-        // Redirect to the product page on success
-        header("Location: product.php");
+        // Upload the image to S3
+        $s3 = new S3Client([
+            'version' => 'latest',
+            'region' => 'us-east-1', // Replace with your AWS region
+            'credentials' => [
+                'key' => getenv('AWS_ACCESS_KEY_ID'),
+                'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
+            ],
+        ]);
+
+        $bucket = 'wipe-web-s3'; // Replace with your S3 bucket name
+        $s3Key = basename($imageFileName);
+
+        try {
+            $result = $s3->putObject([
+                'Bucket' => $bucket,
+                'Key' => $s3Key,
+                'SourceFile' => $targetPath,
+            ]);
+
+            // Optionally, you can delete the local image file after uploading to S3
+            unlink($targetPath);
+
+            // Redirect to the product page on success
+            header("Location: product.php");
+        } catch (Exception $e) {
+            // Handle S3 upload error
+            echo "Error uploading to S3: " . $e->getMessage();
+        }
     } else {
         // Failed to move the uploaded file
         echo "Error: Failed to move the uploaded file.";
