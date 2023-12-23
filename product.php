@@ -46,9 +46,8 @@
                     
                     include "db.inc.php";
                     include "keyaws.php";
-
-                    use Aws\S3\S3Client;
-                    use Aws\Exception\AwsException;
+                    require './vendor/autoload.php';
+                  
 
                     // Set up AWS credentials
                     $s3 = new Aws\S3\S3Client([
