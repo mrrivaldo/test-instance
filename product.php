@@ -38,7 +38,6 @@
                 <div class="nike-title">
                     <p>Shop</p>
                 </div>
-
                 <div class="carousel">
                     <?php include "db.inc.php"; ?>
 
