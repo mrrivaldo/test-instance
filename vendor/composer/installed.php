@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '4e65ea183f4d175d4992f5c9f8a6d8b57cbc5163',
+        'pretty_version' => '2.x-dev',
+        'version' => '2.9999999.9999999.9999999-dev',
+        'reference' => 'e33b137d06baf2a7f68a97182942b8fef693b515',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '4e65ea183f4d175d4992f5c9f8a6d8b57cbc5163',
+            'pretty_version' => '2.x-dev',
+            'version' => '2.9999999.9999999.9999999-dev',
+            'reference' => 'e33b137d06baf2a7f68a97182942b8fef693b515',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'aws/aws-sdk-php' => array(
-            'pretty_version' => '3.294.1',
-            'version' => '3.294.1.0',
-            'reference' => '63c720229a9c9cdedff6bac98d6e72be8cc241f1',
+            'pretty_version' => '3.295.0',
+            'version' => '3.295.0.0',
+            'reference' => '326eb6c26e2be9d896c4aeb025e20980c06779af',
             'type' => 'library',
             'install_path' => __DIR__ . '/../aws/aws-sdk-php',
             'aliases' => array(),
