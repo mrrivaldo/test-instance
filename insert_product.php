@@ -70,7 +70,7 @@ if (!empty($image['name'])) {
                 'key' => getenv('AWS_ACCESS_KEY_ID'),
                 'secret' => getenv('AWS_SECRET_ACCESS_KEY'),
             ],
-            'debug' => true, // Enable debugging
+           
         ]);
 
         $bucket = 'wipe-web-s3'; // Replace with your S3 bucket name
