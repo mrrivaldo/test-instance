@@ -39,11 +39,33 @@
                     <p>Shop</p>
                 </div>
                 <div class="carousel">
-                    <?php include "db.inc.php"; ?>
-
+                    
                     <?php
                     error_reporting(E_ALL);
                     ini_set('display_errors', 1);
+                    
+                    include "db.inc.php";
+                    include "keyaws.php";
+
+                    use Aws\S3\S3Client;
+                    use Aws\Exception\AwsException;
+
+                    // Set up AWS credentials
+                    $credentials = [
+                        'key' => YOUR_AWS_ACCESS_KEY,
+                        'secret' => YOUR_AWS_SECRET_KEY,
+                        'region' => 'us-east-1',
+                    ];
+
+                    // Create an S3 client
+                    $s3Client = new S3Client([
+                        'version' => 'latest',
+                        'region' => $credentials['region'],
+                        'credentials' => $credentials,
+                    ]);
+
+
+                    
                     // Create a connection to the database
                     $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
 
@@ -61,7 +83,11 @@
                         echo '<div class="carousel-card">';
                         echo '<div class="card-content">';
                         echo '<div class="card-image">';
-                        echo '<img src="' . $row['image_url'] . '" alt="product-image" />';
+
+                        // Get the object URL from S3
+                        $s3ObjectUrl = $s3Client->getObjectUrl('wipe-web-s3', 'images/' . $row['image_url']);
+
+                        echo '<img src="' . $s3ObjectUrl . '" alt="product-image" />';
                         echo '</div>';
                         echo '<div class="card-name">';
                         echo '<h3>' . $row['name'] . '</h3>';
@@ -192,7 +218,9 @@
         closeModal();
         closeUpdateModal();
     }
-</script>
+
+
+    </script>
 
 
 </body>
