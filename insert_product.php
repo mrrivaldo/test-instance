@@ -62,6 +62,10 @@ if (!empty($image['name'])) {
         mysqli_stmt_close($stmt);
         mysqli_close($connection);
 
+
+        // Log AWS credentials for debugging
+        error_log('AWS Access Key ID: ' . getenv('AWS_ACCESS_KEY_ID'));
+        error_log('AWS Secret Access Key: ' . getenv('AWS_SECRET_ACCESS_KEY'));
         // Upload the image to S3
         $s3 = new Aws\S3\S3Client([
             'version' => 'latest',
