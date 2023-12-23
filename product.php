@@ -47,6 +47,8 @@
                     include "db.inc.php";
                     include "keyaws.php";
 
+                    use Aws\S3\S3Client;
+                    use Aws\Exception\AwsException;
 
                     // Set up AWS credentials
                     $s3 = new Aws\S3\S3Client([
@@ -79,7 +81,7 @@
                         echo '<div class="card-image">';
 
                         // Get the object URL from S3
-                        $s3ObjectUrl = $s3->getObjectUrl('wipe-web-s3', 'images/' . $row['image_url']);
+                        $s3ObjectUrl = $s3Client->getObjectUrl('wipe-web-s3', 'images/' . $row['image_url']);
 
                         echo '<img src="' . $s3ObjectUrl . '" alt="product-image" />';
                         echo '</div>';
