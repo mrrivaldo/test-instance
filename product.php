@@ -43,6 +43,7 @@
                     <?php include "db.inc.php"; ?>
 
                     <?php
+                    phpinfo();
                     error_reporting(E_ALL);
                     ini_set('display_errors', 1);
                     // Create a connection to the database
