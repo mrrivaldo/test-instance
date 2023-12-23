@@ -76,7 +76,7 @@ if (!empty($image['name'])) {
             ],
         ]);
 
-        $bucket = 'arn:aws:s3:::wipe-web-s3'; // Replace with your S3 bucket name
+        $bucket = 'wipe-web-s3'; // Replace with your S3 bucket name
         $s3Key = basename($imageFileName);
 
         try {
