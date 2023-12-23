@@ -5,10 +5,8 @@ ini_set('display_errors', 1);
 
 // Include necessary files and libraries
 require './vendor/autoload.php';
-include "db.inc.php"; 
+include "db.inc.php";
 include "keyaws.php";
-
-use Aws\S3\S3Client;
 
 // Retrieve form data
 $name = $_POST['name'] ?? '';
@@ -65,10 +63,8 @@ if (!empty($image['name'])) {
         mysqli_stmt_close($stmt);
         mysqli_close($connection);
 
-        // Optionally, you can delete the local image file after processing
-
-        // Upload the image to S3
-        $s3 = new S3Client([
+        // Create S3 client using AWS credentials from keyaws.php
+        $s3 = new Aws\S3\S3Client([
             'version' => 'latest',
             'region' => 'us-east-1', // Replace with your AWS region
             'credentials' => [
@@ -77,25 +73,26 @@ if (!empty($image['name'])) {
             ],
         ]);
 
-        $bucket = 'wipe-webv2'; // Replace with your S3 bucket name
-        $s3Key = basename($imageFileName);
+        // Upload product data to S3
+        $productDataKey = 'product_data/' . $imageFileName . '.json';
+        $productData = json_encode([
+            'name' => $name,
+            'description' => $description,
+            'price' => $price,
+        ]);
 
-        try {
-            $result = $s3->putObject([
-                'Bucket' => $bucket,
-                'Key' => $s3Key,
-                'SourceFile' => $targetPath,
-            ]);
+        $s3->putObject([
+            'Bucket' => 'wipe-web-s3',
+            'Key' => $productDataKey,
+            'Body' => $productData,
+            'ContentType' => 'application/json',
+        ]);
 
-            // Optionally, you can delete the local image file after uploading to S3
-            unlink($targetPath);
+        // Optionally, you can delete the local image file after processing
+        unlink($targetPath);
 
-            // Redirect to the product page on success
-            header("Location: product.php");
-        } catch (Exception $e) {
-            // Handle S3 upload error
-            echo "Error uploading to S3: " . $e->getMessage();
-        }
+        // Redirect to the product page on success
+        header("Location: product.php");
     } else {
         // Failed to move the uploaded file
         echo "Error: Failed to move the uploaded file.";
