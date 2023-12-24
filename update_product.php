@@ -97,28 +97,8 @@ if (!empty($image['name'])) {
     mysqli_stmt_close($stmt);
 
     // Keep the existing S3 image URL
+    $existingImageKey = 'images/' . basename($existingImage); // Add this line to define $existingImageKey
     $newImageUrl = $existingImage;
-
-    // Update metadata in S3 (if needed)
-    $existingMetadata = $s3->headObject([
-        'Bucket' => 'wipe-web-s3',
-        'Key' => $existingImageKey,
-    ])->get('Metadata');
-
-    // Modify metadata as needed
-    $existingMetadata['Product_id'] = $id;
-    $existingMetadata['name'] = $name;
-    $existingMetadata['description'] = $description;
-    $existingMetadata['price'] = $price;
-
-    // Update metadata in S3
-    $s3->copyObject([
-        'Bucket' => 'wipe-web-s3',
-        'CopySource' => 'wipe-web-s3/' . $existingImageKey,
-        'Key' => $existingImageKey,
-        'Metadata' => $existingMetadata,
-        'MetadataDirective' => 'REPLACE',
-    ]);
 }
 
 // Close the database connection
