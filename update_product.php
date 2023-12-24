@@ -6,6 +6,8 @@ require './vendor/autoload.php';
 include "db.inc.php";
 include "keyaws.php"; // Include your AWS credentials
 
+use Aws\S3\S3Client;
+
 // Retrieve form data
 $id = $_POST['id'];
 $name = $_POST['name'];
@@ -25,7 +27,7 @@ if (!empty($image['name'])) {
     // Delete the previous S3 data
     if (!empty($existingImage)) {
         try {
-            $s3 = new Aws\S3\S3Client([
+            $s3 = new S3Client([
                 'version' => 'latest',
                 'region' => 'us-east-1', // Replace with your AWS region
                 'credentials' => [
@@ -51,6 +53,15 @@ if (!empty($image['name'])) {
     }
 
     // Upload image to S3
+    $s3 = new S3Client([
+        'version' => 'latest',
+        'region' => 'us-east-1', // Replace with your AWS region
+        'credentials' => [
+            'key' => AWS_ACCESS_KEY_ID,
+            'secret' => AWS_SECRET_ACCESS_KEY,
+        ],
+    ]);
+
     $s3ImageKey = 'images/' . $id . '_' . $image['name'];
     $s3->putObject([
         'Bucket' => 'wipe-web-s3',
