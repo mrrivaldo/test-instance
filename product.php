@@ -72,7 +72,7 @@
 
                         // Display buttons for CRUD operations
                         echo '<div class="crud-buttons">';
-                        echo '<a class="crud-button" href="#" onclick="openUpdateModal(\'' . $row['product_id'] . '\', \'' . $row['name'] . '\', \'' . $row['description'] . '\', \'' . $row['price'] . '\')"><i class="fa-solid fa-pen"></i></a>';
+                        echo '<a class="crud-button" href="#" onclick="openUpdateModal(\'' . $row['product_id'] . '\', \'' . $row['name'] . '\', \'' . $row['description'] . '\', \'' . $row['price'] . '\', \'' . $row['image_url'] . '\')"><i class="fa-solid fa-pen"></i></a>';
                         echo '<a class="crud-button" href="#" onclick="confirmDelete(' . $row['product_id'] . ')"><i class="fa-solid fa-xmark"></i></a>';
                         echo '</div>';
 
@@ -145,16 +145,20 @@
    
    <!-- JavaScript -->
    <script>
-     function openUpdateModal(productId, name, description, price) {
+     function openUpdateModal(productId, name, description, price, existingImage) {
         // Set values for the input fields in the update form
         document.getElementById("updateProductId").value = productId;
         document.getElementById("updateName").value = name;
         document.getElementById("updateDescription").value = description;
         document.getElementById("updatePrice").value = price;
 
+        // Set the existing image URL
+        document.getElementById("updateExistingImage").value = existingImage;
+
         // Display the update modal
         document.getElementById("updateModal").style.display = "block";
     }
+
 
     function closeUpdateModal() {
         // Close the update modal
