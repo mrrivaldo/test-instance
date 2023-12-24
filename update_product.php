@@ -17,16 +17,6 @@ $existingImage = $_POST['existing_image'];
 // Connect to RDS
 $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
-// Fetch the existing image URL from RDS
-$existingImageUrl = '';
-if ($existingImage) {
-    $result = mysqli_query($connection, "SELECT image_url FROM products WHERE product_id=$id");
-    $row = mysqli_fetch_assoc($result);
-    if ($row) {
-        $existingImageUrl = $row['image_url'];
-    }
-}
-
 // Check if a new image is uploaded
 if (!empty($image['name'])) {
     // Process image upload logic (You can include your S3 upload code here)
@@ -34,23 +24,22 @@ if (!empty($image['name'])) {
     $targetFile = $targetDir . basename($image['name']);
     move_uploaded_file($image['tmp_name'], $targetFile);
 
+    // Create S3 client using AWS credentials
+    $s3 = new Aws\S3\S3Client([
+        'version' => 'latest',
+        'region' => 'us-east-1', // Replace with your AWS region
+        'credentials' => [
+            'key' => AWS_ACCESS_KEY_ID,
+            'secret' => AWS_SECRET_ACCESS_KEY,
+        ],
+    ]);
+
     // Delete the previous image in S3
-    if ($existingImageUrl) {
-        $parsedUrl = parse_url($existingImageUrl);
+    if ($existingImage) {
+        $parsedUrl = parse_url($existingImage);
         $path = ltrim($parsedUrl['path'], '/');
         $s3Key = urldecode($path);
 
-        // Create S3 client using AWS credentials
-        $s3 = new Aws\S3\S3Client([
-            'version' => 'latest',
-            'region' => 'us-east-1', // Replace with your AWS region
-            'credentials' => [
-                'key' => AWS_ACCESS_KEY_ID,
-                'secret' => AWS_SECRET_ACCESS_KEY,
-            ],
-        ]);
-
-        // Delete the object from S3
         try {
             $s3->deleteObject([
                 'Bucket' => 'wipe-web-s3',
@@ -69,13 +58,6 @@ if (!empty($image['name'])) {
         'Key' => $newImageKey,
         'SourceFile' => $targetFile,
         'ContentType' => mime_content_type($targetFile),
-        'Metadata' => [
-            'Product_id' => $id,
-            'name' => $name,
-            'description' => $description,
-            'price' => $price,
-            // Add more metadata fields as needed
-        ],
     ]);
 
     // Update product data in RDS with the new S3 image URL
