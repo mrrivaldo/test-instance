@@ -57,7 +57,7 @@ if (!empty($image['name'])) {
         ],
     ]);
 
-    // Update product data in RDS with the new S3 image URL
+    // Update product data in RDS with the new S3 image URL and metadata
     $newImageUrl = $s3->getObjectUrl('wipe-web-s3', $newImageKey);
     $sql = "UPDATE products SET name=?, description=?, price=?, image_url=? WHERE product_id=?";
     $stmt = mysqli_prepare($connection, $sql);
@@ -98,6 +98,26 @@ if (!empty($image['name'])) {
 
     // Keep the existing S3 image URL
     $newImageUrl = $existingImage;
+
+    // Update metadata in S3
+    $existingMetadata = $s3->headObject([
+        'Bucket' => 'wipe-web-s3',
+        'Key' => $existingImageKey,
+    ])->get('Metadata');
+
+    $s3->copyObject([
+        'Bucket' => 'wipe-web-s3',
+        'CopySource' => 'wipe-web-s3/' . $existingImageKey,
+        'Key' => $existingImageKey,
+        'Metadata' => [
+            'Product_id' => $id,
+            'name' => $name,
+            'description' => $description,
+            'price' => $price,
+            // Add more metadata fields as needed
+        ],
+        'MetadataDirective' => 'REPLACE',
+    ]);
 }
 
 // Close the database connection
