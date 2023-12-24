@@ -4,7 +4,10 @@ ini_set('display_errors', 1);
 
 require './vendor/autoload.php';
 include "db.inc.php";
-include "keyaws.php"; // Include your AWS credentials
+include "keyaws.php";
+
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
 
 // Retrieve form data
 $id = $_POST['id'];
@@ -17,71 +20,96 @@ $existingImage = $_POST['existing_image'];
 // Connect to RDS
 $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
-// Create S3 client using AWS credentials
-$s3 = new Aws\S3\S3Client([
-    'version' => 'latest',
-    'region' => 'us-east-1', // Replace with your AWS region
-    'credentials' => [
-        'key' => AWS_ACCESS_KEY_ID,
-        'secret' => AWS_SECRET_ACCESS_KEY,
-    ],
-]);
-
-// Initialize newImageUrl to the existing image URL
-$newImageUrl = null;
-
 // Check if a new image is uploaded
 if (!empty($image['name'])) {
-    // Process image upload logic and update S3
+    // Process image upload logic
+
+    // Delete the previous data in S3
+    if (!empty($existingImage)) {
+        $s3 = new S3Client([
+            'version' => 'latest',
+            'region' => 'us-east-1', // Replace with your AWS region
+            'credentials' => [
+                'key' => YOUR_AWS_ACCESS_KEY_ID,
+                'secret' => YOUR_AWS_SECRET_ACCESS_KEY,
+            ],
+        ]);
+
+        try {
+            $s3->deleteObject([
+                'Bucket' => 'wipe-web-s3',
+                'Key' => 'images/' . basename($existingImage),
+            ]);
+        } catch (AwsException $e) {
+            echo "Error deleting previous S3 data: " . $e->getMessage() . PHP_EOL;
+        }
+    }
+
+    // Upload the new image to S3
     $targetDir = "./images/";
     $targetFile = $targetDir . basename($image['name']);
     move_uploaded_file($image['tmp_name'], $targetFile);
 
-    // Delete the previous image in S3
-    $existingImageKey = 'images/' . basename($existingImage);
-    $s3->deleteObject([
-        'Bucket' => 'wipe-web-s3',
-        'Key' => $existingImageKey,
-    ]);
-
-    // Upload the new image to S3
-    $newImageKey = 'images/' . $id . '_' . basename($targetFile); // Use product_id in the image name
-    $s3->putObject([
-        'Bucket' => 'wipe-web-s3',
-        'Key' => $newImageKey,
-        'SourceFile' => $targetFile,
-        'ContentType' => mime_content_type($targetFile),
-        'Metadata' => [
-            'Product_id' => $id,
-            'name' => $name,
-            'description' => $description,
-            'price' => $price,
-            // Add more metadata fields as needed
+    $s3 = new S3Client([
+        'version' => 'latest',
+        'region' => 'us-east-1', // Replace with your AWS region
+        'credentials' => [
+            'key' => YOUR_AWS_ACCESS_KEY_ID,
+            'secret' => YOUR_AWS_SECRET_ACCESS_KEY,
         ],
     ]);
 
+    try {
+        $s3->putObject([
+            'Bucket' => 'wipe-web-s3',
+            'Key' => 'images/' . basename($targetFile),
+            'SourceFile' => $targetFile,
+            'ContentType' => mime_content_type($targetFile),
+            'Metadata' => [
+                'Product_id' => $id,
+                'name' => $name,
+                'description' => $description,
+                'price' => $price,
+                // Add more metadata fields as needed
+            ],
+        ]);
+    } catch (AwsException $e) {
+        echo "Error uploading new image to S3: " . $e->getMessage() . PHP_EOL;
+    }
+
     // Update product data in RDS with the new S3 image URL
-    $newImageUrl = $s3->getObjectUrl('wipe-web-s3', $newImageKey);
+    $newImageUrl = $s3->getObjectUrl('wipe-web-s3', 'images/' . basename($targetFile));
+    $sql = "UPDATE products SET name=?, description=?, price=?, image_url=? WHERE product_id=?";
+} else {
+    // Update product data in RDS without updating the image URL
+    $sql = "UPDATE products SET name=?, description=?, price=? WHERE product_id=?";
 }
 
-// Update product data in RDS without updating the image URL
-$sql = "UPDATE products SET name=?, description=?, price=?, image_url=? WHERE product_id=?";
+// Use prepared statements to prevent SQL injection
 $stmt = mysqli_prepare($connection, $sql);
 
-// Bind parameters to the prepared statement
-mysqli_stmt_bind_param($stmt, 'ssdsd', $name, $description, $price, $newImageUrl, $id);
+if ($stmt) {
+    // Bind parameters to the prepared statement
+    if (!empty($image['name'])) {
+        mysqli_stmt_bind_param($stmt, 'ssdsd', $name, $description, $price, $newImageUrl, $id);
+    } else {
+        mysqli_stmt_bind_param($stmt, 'ssdd', $name, $description, $price, $id);
+    }
 
-// Execute the prepared statement
-$result = mysqli_stmt_execute($stmt);
+    // Execute the prepared statement
+    $result = mysqli_stmt_execute($stmt);
 
-// Check for success
-if (!$result) {
-    // Log the error or display a user-friendly message
-    echo "Error: " . mysqli_error($connection);
+    // Check for success
+    if (!$result) {
+        // Log the error or display a user-friendly message
+        echo "Error updating product data in RDS: " . mysqli_error($connection);
+    }
+
+    // Close the prepared statement
+    mysqli_stmt_close($stmt);
+} else {
+    echo "Error preparing SQL statement: " . mysqli_error($connection);
 }
-
-// Close the prepared statement
-mysqli_stmt_close($stmt);
 
 // Close the database connection
 mysqli_close($connection);
