@@ -21,7 +21,7 @@ $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
 
 // Check if a new image is uploaded
 if (!empty($image['name'])) {
-    // Process image upload logic (You can include your S3 upload code here)
+    // Process image upload logic
     $tempFilePath = $image['tmp_name'];
 
     // Delete the previous S3 data
@@ -53,15 +53,6 @@ if (!empty($image['name'])) {
     }
 
     // Upload image to S3
-    $s3 = new S3Client([
-        'version' => 'latest',
-        'region' => 'us-east-1', // Replace with your AWS region
-        'credentials' => [
-            'key' => AWS_ACCESS_KEY_ID,
-            'secret' => AWS_SECRET_ACCESS_KEY,
-        ],
-    ]);
-
     $s3ImageKey = 'images/' . $id . '_' . $image['name'];
     $s3->putObject([
         'Bucket' => 'wipe-web-s3',
