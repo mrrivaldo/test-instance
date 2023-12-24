@@ -38,6 +38,31 @@ if (!empty($image['name'])) {
             die("Connection failed: " . mysqli_connect_error());
         }
 
+        // Fetch the product ID from RDS based on other details
+        $productId = 0; // Initialize product ID
+        $selectSql = "SELECT product_id FROM products WHERE name = ? AND description = ? AND price = ?";
+        $selectStmt = mysqli_prepare($connection, $selectSql);
+
+        // Check for the prepared statement
+        if ($selectStmt === false) {
+            die("Error in preparing statement: " . mysqli_error($connection));
+        }
+
+        // Bind parameters to the prepared statement
+        mysqli_stmt_bind_param($selectStmt, 'ssd', $name, $description, $price);
+
+        // Execute the prepared statement
+        mysqli_stmt_execute($selectStmt);
+
+        // Bind the result variable
+        mysqli_stmt_bind_result($selectStmt, $productId);
+
+        // Fetch the result
+        mysqli_stmt_fetch($selectStmt);
+
+        // Close the select statement
+        mysqli_stmt_close($selectStmt);
+
         // Create S3 client using AWS credentials from keyaws.php
         $s3 = new Aws\S3\S3Client([
             'version' => 'latest',
@@ -55,25 +80,32 @@ if (!empty($image['name'])) {
             'Key' => $s3ImageKey,
             'SourceFile' => $targetPath,
             'ContentType' => mime_content_type($targetPath),
+            'Metadata' => [
+                'Product_id' => $productId,
+                'name' => $name,
+                'description' => $description,
+                'price' => $price,
+                // Add more metadata fields as needed
+            ],
         ]);
 
         // Get the S3 URL of the uploaded image
         $image_url = $s3->getObjectUrl('wipe-web-s3', $s3ImageKey);
 
         // Insert product data into RDS with S3 URL
-        $sql = "INSERT INTO products (name, description, image_url, price) VALUES (?, ?, ?, ?)";
-        $stmt = mysqli_prepare($connection, $sql);
+        $insertSql = "INSERT INTO products (product_id, name, description, image_url, price) VALUES (?, ?, ?, ?, ?)";
+        $insertStmt = mysqli_prepare($connection, $insertSql);
 
         // Check for the prepared statement
-        if ($stmt === false) {
+        if ($insertStmt === false) {
             die("Error in preparing statement: " . mysqli_error($connection));
         }
 
         // Bind parameters to the prepared statement
-        mysqli_stmt_bind_param($stmt, 'sssd', $name, $description, $image_url, $price);
+        mysqli_stmt_bind_param($insertStmt, 'dsssd', $productId, $name, $description, $image_url, $price);
 
         // Execute the prepared statement
-        $result = mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_execute($insertStmt);
 
         // Check for success
         if (!$result) {
@@ -82,7 +114,7 @@ if (!empty($image['name'])) {
         }
 
         // Close the prepared statement and the database connection
-        mysqli_stmt_close($stmt);
+        mysqli_stmt_close($insertStmt);
         mysqli_close($connection);
 
         // Optionally, you can delete the local image file after processing
