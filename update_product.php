@@ -97,7 +97,7 @@ if (!empty($image['name'])) {
     mysqli_stmt_close($stmt);
 
     // Keep the existing S3 image URL
-    $newImageUrl = $existingImage;
+    $existingImageKey = 'images/' . basename($existingImage);
 
     // Update metadata in S3
     $existingMetadata = $s3->headObject([
