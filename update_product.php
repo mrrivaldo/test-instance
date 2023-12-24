@@ -42,7 +42,7 @@ if (!empty($image['name'])) {
     ]);
 
     // Upload the new image to S3
-    $newImageKey = 'images/' . basename($targetFile);
+    $newImageKey = 'images/' . $id . '_' . basename($targetFile); // Use product_id in the image name
     $s3->putObject([
         'Bucket' => 'wipe-web-s3',
         'Key' => $newImageKey,
