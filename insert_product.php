@@ -38,30 +38,32 @@ if (!empty($image['name'])) {
             die("Connection failed: " . mysqli_connect_error());
         }
 
-        // Fetch the product ID from RDS based on other details
-        $productId = 0; // Initialize product ID
-        $selectSql = "SELECT product_id FROM products WHERE name = ? AND description = ? AND price = ?";
-        $selectStmt = mysqli_prepare($connection, $selectSql);
+        // Insert product data into RDS without S3 URL
+        $insertSql = "INSERT INTO products (name, description, price) VALUES (?, ?, ?)";
+        $insertStmt = mysqli_prepare($connection, $insertSql);
 
         // Check for the prepared statement
-        if ($selectStmt === false) {
+        if ($insertStmt === false) {
             die("Error in preparing statement: " . mysqli_error($connection));
         }
 
         // Bind parameters to the prepared statement
-        mysqli_stmt_bind_param($selectStmt, 'ssd', $name, $description, $price);
+        mysqli_stmt_bind_param($insertStmt, 'ssd', $name, $description, $price);
 
         // Execute the prepared statement
-        mysqli_stmt_execute($selectStmt);
+        $result = mysqli_stmt_execute($insertStmt);
 
-        // Bind the result variable
-        mysqli_stmt_bind_result($selectStmt, $productId);
+        // Check for success
+        if (!$result) {
+            // Log the error or display a user-friendly message
+            echo "Error: " . mysqli_error($connection);
+        }
 
-        // Fetch the result
-        mysqli_stmt_fetch($selectStmt);
+        // Get the auto-generated product_id
+        $productId = mysqli_insert_id($connection);
 
-        // Close the select statement
-        mysqli_stmt_close($selectStmt);
+        // Close the prepared statement
+        mysqli_stmt_close($insertStmt);
 
         // Create S3 client using AWS credentials from keyaws.php
         $s3 = new Aws\S3\S3Client([
@@ -74,7 +76,7 @@ if (!empty($image['name'])) {
         ]);
 
         // Upload image to S3
-        $s3ImageKey = 'images/' . $imageFileName;
+        $s3ImageKey = 'images/' . $productId . '_' . $imageFileName;
         $s3->putObject([
             'Bucket' => 'wipe-web-s3',
             'Key' => $s3ImageKey,
@@ -92,29 +94,25 @@ if (!empty($image['name'])) {
         // Get the S3 URL of the uploaded image
         $image_url = $s3->getObjectUrl('wipe-web-s3', $s3ImageKey);
 
-        // Insert product data into RDS with S3 URL
-        $insertSql = "INSERT INTO products (product_id, name, description, image_url, price) VALUES (?, ?, ?, ?, ?)";
-        $insertStmt = mysqli_prepare($connection, $insertSql);
+        // Update RDS record with the S3 image URL
+        $sqlUpdate = "UPDATE products SET image_url = ? WHERE product_id = ?";
+        $stmtUpdate = mysqli_prepare($connection, $sqlUpdate);
 
         // Check for the prepared statement
-        if ($insertStmt === false) {
+        if ($stmtUpdate === false) {
             die("Error in preparing statement: " . mysqli_error($connection));
         }
 
         // Bind parameters to the prepared statement
-        mysqli_stmt_bind_param($insertStmt, 'dsssd', $productId, $name, $description, $image_url, $price);
+        mysqli_stmt_bind_param($stmtUpdate, 'si', $image_url, $productId);
 
         // Execute the prepared statement
-        $result = mysqli_stmt_execute($insertStmt);
+        mysqli_stmt_execute($stmtUpdate);
 
-        // Check for success
-        if (!$result) {
-            // Log the error or display a user-friendly message
-            echo "Error: " . mysqli_error($connection);
-        }
+        // Close the update statement
+        mysqli_stmt_close($stmtUpdate);
 
-        // Close the prepared statement and the database connection
-        mysqli_stmt_close($insertStmt);
+        // Close the database connection
         mysqli_close($connection);
 
         // Optionally, you can delete the local image file after processing
