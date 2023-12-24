@@ -73,6 +73,12 @@ if (!empty($image['name'])) {
         // Log or handle the error
         echo "Error deleting from S3: " . $e->getMessage();
     }
+    echo "Existing Image URL: " . $existingImage . PHP_EOL;
+    echo "Parsed URL: " . print_r($parsedUrl, true) . PHP_EOL;
+    echo "S3 Key: " . $s3Key . PHP_EOL;
+
+
+
 
     // Upload the new image to S3
     $s3ImageKey = 'images/' . $id . '_' . $image['name'];
