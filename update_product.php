@@ -58,10 +58,10 @@ if (!empty($image['name'])) {
         ],
     ]);
 
-    // Extract S3 key from the existing image URL
-    $parsedUrl = parse_url($existingImage);
-    $path = ltrim($parsedUrl['path'], '/');
-    $s3Key = urldecode($path);
+        // Debug statements
+    echo "Existing Image URL: " . $existingImage . PHP_EOL;
+    echo "Parsed URL: " . print_r($parsedUrl, true) . PHP_EOL;
+    echo "S3 Key: " . $s3Key . PHP_EOL;
 
     // Delete the previous object from S3
     try {
@@ -73,9 +73,6 @@ if (!empty($image['name'])) {
         // Log or handle the error
         echo "Error deleting from S3: " . $e->getMessage();
     }
-    echo "Existing Image URL: " . $existingImage . PHP_EOL;
-    echo "Parsed URL: " . print_r($parsedUrl, true) . PHP_EOL;
-    echo "S3 Key: " . $s3Key . PHP_EOL;
 
 
 
