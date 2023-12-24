@@ -27,6 +27,9 @@ $s3 = new Aws\S3\S3Client([
     ],
 ]);
 
+// Initialize newImageUrl to the existing image URL
+$newImageUrl = null;
+
 // Check if a new image is uploaded
 if (!empty($image['name'])) {
     // Process image upload logic and update S3
@@ -59,47 +62,26 @@ if (!empty($image['name'])) {
 
     // Update product data in RDS with the new S3 image URL
     $newImageUrl = $s3->getObjectUrl('wipe-web-s3', $newImageKey);
-    $sql = "UPDATE products SET name=?, description=?, price=?, image_url=? WHERE product_id=?";
-    $stmt = mysqli_prepare($connection, $sql);
-
-    // Bind parameters to the prepared statement
-    mysqli_stmt_bind_param($stmt, 'ssdsd', $name, $description, $price, $newImageUrl, $id);
-
-    // Execute the prepared statement
-    $result = mysqli_stmt_execute($stmt);
-
-    // Check for success
-    if (!$result) {
-        // Log the error or display a user-friendly message
-        echo "Error: " . mysqli_error($connection);
-    }
-
-    // Close the prepared statement
-    mysqli_stmt_close($stmt);
-} else {
-    // Update product data in RDS without updating the image URL
-    $sql = "UPDATE products SET name=?, description=?, price=? WHERE product_id=?";
-    $stmt = mysqli_prepare($connection, $sql);
-
-    // Bind parameters to the prepared statement
-    mysqli_stmt_bind_param($stmt, 'ssdd', $name, $description, $price, $id);
-
-    // Execute the prepared statement
-    $result = mysqli_stmt_execute($stmt);
-
-    // Check for success
-    if (!$result) {
-        // Log the error or display a user-friendly message
-        echo "Error: " . mysqli_error($connection);
-    }
-
-    // Close the prepared statement
-    mysqli_stmt_close($stmt);
-
-    // Keep the existing S3 image URL
-    $existingImageKey = 'images/' . basename($existingImage); // Add this line to define $existingImageKey
-    $newImageUrl = $existingImage;
 }
+
+// Update product data in RDS without updating the image URL
+$sql = "UPDATE products SET name=?, description=?, price=?, image_url=? WHERE product_id=?";
+$stmt = mysqli_prepare($connection, $sql);
+
+// Bind parameters to the prepared statement
+mysqli_stmt_bind_param($stmt, 'ssdsd', $name, $description, $price, $newImageUrl, $id);
+
+// Execute the prepared statement
+$result = mysqli_stmt_execute($stmt);
+
+// Check for success
+if (!$result) {
+    // Log the error or display a user-friendly message
+    echo "Error: " . mysqli_error($connection);
+}
+
+// Close the prepared statement
+mysqli_stmt_close($stmt);
 
 // Close the database connection
 mysqli_close($connection);
